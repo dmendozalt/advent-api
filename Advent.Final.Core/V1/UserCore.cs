@@ -62,6 +62,27 @@ namespace Advent.Final.Core.V1
 
         public async Task<bool> AuthUser(string username, string password)
         {
+            var users = await _context.GetByFilterAsync(u => u.Username.Equals(username));
+            if(users.Count == 0) { return false; }
+            string passwordAttempt = EncryptCore.Encrypt_SHA256(username, password);
+            return passwordAttempt == users.FirstOrDefault().Password;
+        }
+
+        public async Task<bool> SetPassword(string username, string password)
+        {
+            var users = await _context.GetByFilterAsync(u => u.Username.Equals(username));
+            if (users.Count == 0) { return false; }
+            users.FirstOrDefault().Password = EncryptCore.Encrypt_SHA256(username, password);
+            return true;
+        }
+
+        public async Task<bool> ChangePassword(string username, string password, string newPassword)
+        {
+            var users = await _context.GetByFilterAsync(u => u.Username.Equals(username));
+            if (users.Count == 0) { return false; }
+            string passwordAttempt = EncryptCore.Encrypt_SHA256(username, password);
+            if (passwordAttempt != users.FirstOrDefault().Password){ return false; }
+            users.FirstOrDefault().Password=EncryptCore.Encrypt_SHA256(username, newPassword);
             return true;
         }
     }

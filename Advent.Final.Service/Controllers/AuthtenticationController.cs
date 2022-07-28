@@ -1,5 +1,6 @@
 ﻿using Advent.Final.Contracts.Repository;
 using Advent.Final.Core.V1;
+using Advent.Final.Entities.DTOs;
 using Advent.Final.Entities.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +21,21 @@ namespace Advent.Final.Service.Controllers
         }
         // POST api/<AuthtenticationController>
         [HttpPost]
-        public string Login(string username, string password)
+        public async Task<ActionResult<UserLoginDto>> Login(string username, string password)
         {
-            return password;
+            var response= await _core.AuthUser(username,password);
+            return StatusCode((int)response.StatusHttp, response);
+
+        }
+        public async Task<ActionResult<bool>> AddPassword(string username, string password) 
+        {
+            var response = await _core.AddPassword(username, password);
+            return StatusCode((int)response.StatusHttp, response);
+        }
+        public async Task<ActionResult<bool>> ResetPassword(string username,string oldPassword, string newPassword)
+        {
+            var response = await _core.ResetPassword(username,oldPassword, newPassword);
+            return StatusCode((int)response.StatusHttp, response);
         }
 
     }

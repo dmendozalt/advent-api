@@ -28,6 +28,28 @@ namespace Advent.Final.Core.V1
             _userCore = new(userContext, userLogger, mapper);
             _config = configuration;
         }
+        public async Task<ResponseService<bool>> AddPassword(string username, string password) 
+        {
+            if (await _userCore.SetPassword(username, password))
+            {
+                return new ResponseService<bool>(false, "Password added", HttpStatusCode.OK, true);
+            }
+            else
+            {
+                return new ResponseService<bool>(true, "No password", HttpStatusCode.BadRequest, false);
+            }
+        }
+        public async Task<ResponseService<bool>> ResetPassword(string username, string password,string newPassword) 
+        {
+            if (await _userCore.ChangePassword(username, password,newPassword))
+            {
+                return new ResponseService<bool>(false, "Password changed", HttpStatusCode.OK, true);
+            }
+            else
+            {
+                return new ResponseService<bool>(true, "No password", HttpStatusCode.BadRequest, false);
+            }
+        }
 
         public async Task<ResponseService<UserLoginDto>> AuthUser(string username,string password)
         {
@@ -47,7 +69,7 @@ namespace Advent.Final.Core.V1
             }
         }
 
-        public string GenerarTokenJWT(string username)
+        private string GenerarTokenJWT(string username)
         {
             // Create header
             var _symmetricSecurityKey = new SymmetricSecurityKey(

@@ -16,7 +16,7 @@ namespace Advent.Final.DataAccess.Context
 
         public SqlServerContext(DbContextOptions<SqlServerContext> options) : base(options) { }
 
-        public SqlServerContext() => _connectionString = @"Data Source = DESKTOP-R4U1A54\SQLEXPRESS; Initial Catalog = Inventory; Integrated Security = true";
+        public SqlServerContext() => _connectionString = @"Data Source = DESKTOP-R4U1A54\SQLEXPRESS; Initial Catalog = Advent; Integrated Security = true";
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
