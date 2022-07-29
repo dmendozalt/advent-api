@@ -35,7 +35,8 @@ namespace Advent.Final.Core.V1
             try
             {
                 User newUser = _mapper.Map<User>(userCreate);
-
+                newUser.Created = DateTime.Now;
+                newUser.Status = "Creado";
                 var response = await _context.AddAsync(newUser);
                 return new ResponseService<User>(false, response == null ? "No records found" : "Movement created", HttpStatusCode.OK, response.Item1);
             }
@@ -65,7 +66,12 @@ namespace Advent.Final.Core.V1
             var users = await _context.GetByFilterAsync(u => u.Username.Equals(username));
             if(users.Count == 0) { return false; }
             string passwordAttempt = EncryptCore.Encrypt_SHA256(username, password);
-            return passwordAttempt == users.FirstOrDefault().Password;
+            if(passwordAttempt == users.FirstOrDefault().Password)
+            {
+                users.FirstOrDefault().LastLogin=DateTime.Now;
+                return true;
+            }
+            else { return false; }
         }
 
         public async Task<bool> SetPassword(string username, string password)
@@ -73,6 +79,7 @@ namespace Advent.Final.Core.V1
             var users = await _context.GetByFilterAsync(u => u.Username.Equals(username));
             if (users.Count == 0) { return false; }
             users.FirstOrDefault().Password = EncryptCore.Encrypt_SHA256(username, password);
+            users.FirstOrDefault().Status = "Activo";
             return true;
         }
 
