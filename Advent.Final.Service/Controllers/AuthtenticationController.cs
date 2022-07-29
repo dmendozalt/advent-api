@@ -27,11 +27,15 @@ namespace Advent.Final.Service.Controllers
             return StatusCode((int)response.StatusHttp, response);
 
         }
+
+        [HttpPost("password")]
         public async Task<ActionResult<bool>> AddPassword(string username, string password) 
         {
             var response = await _core.AddPassword(username, password);
             return StatusCode((int)response.StatusHttp, response);
         }
+
+        [HttpPut("password")]
         public async Task<ActionResult<bool>> ResetPassword(string username,string oldPassword, string newPassword)
         {
             var response = await _core.ResetPassword(username,oldPassword, newPassword);
