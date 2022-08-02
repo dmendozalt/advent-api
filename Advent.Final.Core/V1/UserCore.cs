@@ -31,6 +31,19 @@ namespace Advent.Final.Core.V1
 
         }
 
+        public async Task<ResponseService<List<User>>> GetAll()
+        {
+            try
+            {
+                var response = await _context.GetAllAsync();
+                return new ResponseService<List<User>>(false, response == null ? "No records found" : "User list", HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return _errorHandler.Error(ex, "CreateUser", new List<User>());
+            }
+        }
+
         public async Task<ResponseService<User>> CreateUser(UserCreateDto userCreate) {
             try
             {
@@ -38,7 +51,7 @@ namespace Advent.Final.Core.V1
                 newUser.Created = DateTime.Now;
                 newUser.Status = "Creado";
                 var response = await _context.AddAsync(newUser);
-                return new ResponseService<User>(false, response == null ? "No records found" : "Movement created", HttpStatusCode.OK, response.Item1);
+                return new ResponseService<User>(false, response == null ? "No records found" : "User created", HttpStatusCode.OK, response.Item1);
             }
             catch (Exception ex)
             {
@@ -80,6 +93,7 @@ namespace Advent.Final.Core.V1
             if (users.Count == 0) { return false; }
             users.FirstOrDefault().Password = EncryptCore.Encrypt_SHA256(username, password);
             users.FirstOrDefault().Status = "Activo";
+            await _context.UpdateAsync(users.FirstOrDefault());
             return true;
         }
 
@@ -90,6 +104,7 @@ namespace Advent.Final.Core.V1
             string passwordAttempt = EncryptCore.Encrypt_SHA256(username, password);
             if (passwordAttempt != users.FirstOrDefault().Password){ return false; }
             users.FirstOrDefault().Password=EncryptCore.Encrypt_SHA256(username, newPassword);
+            await _context.UpdateAsync(users.FirstOrDefault());
             return true;
         }
     }

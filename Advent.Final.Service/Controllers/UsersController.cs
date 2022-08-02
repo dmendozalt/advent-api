@@ -3,6 +3,7 @@ using Advent.Final.Core.V1;
 using Advent.Final.Entities.DTOs;
 using Advent.Final.Entities.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,9 +16,17 @@ namespace Advent.Final.Service.Controllers
     {
         private readonly UserCore _core;
 
-        public UsersController(ILogger<User> logger,IMapper mapper, IUserRepository context)
+        public UsersController(ILogger<User> logger, IMapper mapper, IUserRepository context)
         {
-            _core=new(context,logger,mapper);
+            _core = new(context, logger, mapper);
+        }
+
+        [HttpGet]
+        [Authorize()]
+        public async Task<ActionResult<List<User>>> Get()
+        {
+            var response=await _core.GetAll();
+            return StatusCode((int)response.StatusHttp, response);
         }
 
         // POST api/<UsersController>

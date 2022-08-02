@@ -65,7 +65,7 @@ namespace Advent.Final.Core.V1
             }
             else
             {
-                return new ResponseService<UserLoginDto>(true, "Login unsuccessful", HttpStatusCode.BadRequest, new());
+                return new ResponseService<UserLoginDto>(true, "Login unsuccessful", HttpStatusCode.Forbidden, new());
             }
         }
 
