@@ -16,6 +16,14 @@ namespace Advent.Final.Core.Mapping
             //User
             CreateMap<UserCreateDto, User>();
             CreateMap<User, UserCreateDto>();
+
+            ////Booking
+            //CreateMap<BookingCreateDto, Booking>();
+            //CreateMap<Booking, BookingCreateDto>();
+
+            //Booking detail
+            CreateMap<BookingDetailDto, BookingDetail>();
+            CreateMap<BookingDetail, BookingDetailDto>();
         }
     }
 }

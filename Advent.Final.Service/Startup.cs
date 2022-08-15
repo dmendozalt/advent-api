@@ -44,10 +44,14 @@ namespace Advent.Final.Services
 
             services.AddDbContext<SqlServerContext>(op =>
             {
-                op.UseSqlServer(Configuration.GetConnectionString("Default"));
+                op.UseMySQL(Configuration.GetConnectionString("MySQL"));
+                //op.UseSqlServer(Configuration.GetConnectionString("Default"));
             });
 
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IPaymentMethodRepository, PaymentMethodRepository>();
+            services.AddTransient<IBookingRepository, BookingRepository>();
+            services.AddTransient<IBookingDetailRepository, BookingDetailRepository>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -78,6 +82,8 @@ namespace Advent.Final.Services
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
