@@ -2,6 +2,7 @@
 using Advent.Final.Core.V1;
 using Advent.Final.Entities.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,6 +11,7 @@ namespace Advent.Final.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PaymentsController : ControllerBase
     {
         private readonly PaymentCore _core;
@@ -20,7 +22,7 @@ namespace Advent.Final.Service.Controllers
 
 
         // GET api/<PaymentsController>/5
-        [HttpGet("/methods/{idUser}")]
+        [HttpGet("Methods/{idUser}")]
         public async Task<ActionResult<List<PaymentMethod>>> GetPaymentMethods(int idUser)
         {
             var response = await _core.GetAllMethods(idUser);

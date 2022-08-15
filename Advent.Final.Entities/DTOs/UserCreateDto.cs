@@ -10,6 +10,5 @@ namespace Advent.Final.Entities.DTOs
     public class UserCreateDto: Person
     {
         public string Username { get; set; }
-        public string Token { get; set; }
     }
 }

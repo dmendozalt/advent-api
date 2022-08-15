@@ -39,6 +39,7 @@ namespace Advent.Final.Service.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("password/{id}")]
+        [Authorize]
         public async Task<ActionResult<User>> UpdatePassword(int id, [FromBody] UserPasswordDto request)
         {
             var response=await _core.UpdatePassword(id,request);
