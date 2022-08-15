@@ -13,11 +13,11 @@ namespace Advent.Final.Repositories.ImplementRepositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly SqlServerContext _context;
+        private readonly MySqlContext _context;
 
         public UserRepository()
         {
-            _context = new SqlServerContext();
+            _context = new();
         }
         public async Task<Tuple<User, bool>> AddAsync(User entity)
         {

@@ -21,24 +21,24 @@ namespace Advent.Final.Service.Controllers
         }
         // POST api/<AuthtenticationController>
         [HttpPost]
-        public async Task<ActionResult<UserLoginDto>> Login(string username, string password)
+        public async Task<ActionResult<UserLoginDto>> Login([FromBody] UserLoginRequestDto request)
         {
-            var response= await _core.AuthUser(username,password);
+            var response= await _core.AuthUser(request);
             return StatusCode((int)response.StatusHttp, response);
 
         }
 
         [HttpPost("password")]
-        public async Task<ActionResult<bool>> AddPassword(string username, string password) 
+        public async Task<ActionResult<bool>> AddPassword([FromBody] UserLoginRequestDto request) 
         {
-            var response = await _core.AddPassword(username, password);
+            var response = await _core.AddPassword(request);
             return StatusCode((int)response.StatusHttp, response);
         }
 
         [HttpPut("password")]
-        public async Task<ActionResult<bool>> ResetPassword(string username,string oldPassword, string newPassword)
+        public async Task<ActionResult<bool>> ResetPassword([FromBody] UserChangePasswordDto request)
         {
-            var response = await _core.ResetPassword(username,oldPassword, newPassword);
+            var response = await _core.ResetPassword(request);
             return StatusCode((int)response.StatusHttp, response);
         }
 

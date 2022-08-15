@@ -22,10 +22,10 @@ namespace Advent.Final.Service.Controllers
         }
 
         [HttpGet]
-        [Authorize()]
+        [Authorize]
         public async Task<ActionResult<List<User>>> Get()
         {
-            var response=await _core.GetAll();
+            var response = await _core.GetAll();
             return StatusCode((int)response.StatusHttp, response);
         }
 
@@ -33,15 +33,15 @@ namespace Advent.Final.Service.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> CreateUser([FromBody] UserCreateDto user)
         {
-            var response=await _core.CreateUser(user);
+            var response = await _core.CreateUser(user);
             return StatusCode((int)response.StatusHttp, response);
         }
 
         // PUT api/<UsersController>/5
-        [HttpPut]
-        public async Task<ActionResult<User>> UpdatePassword(int idUser, string password)
+        [HttpPut("password/{id}")]
+        public async Task<ActionResult<User>> UpdatePassword(int id, [FromBody] UserPasswordDto request)
         {
-            var response=await _core.UpdatePassword(idUser,password);
+            var response=await _core.UpdatePassword(id,request);
             return StatusCode((int)response.StatusHttp, response);
         }
     }

@@ -20,6 +20,7 @@ namespace Advent.Final.Core.V1
         private readonly ErrorHandler<User> _errorHandler;
         private readonly ILogger<User> _logger;
         private readonly IMapper _mapper;
+        private readonly StripeCore _stripe;
 
 
         public UserCore(IUserRepository context,ILogger<User> logger, IMapper mapper)
@@ -28,7 +29,7 @@ namespace Advent.Final.Core.V1
             _mapper = mapper;
             _logger = logger;
             _errorHandler = new ErrorHandler<User>(logger);
-
+            _stripe = new();
         }
 
         public async Task<ResponseService<List<User>>> GetAll()
@@ -50,6 +51,7 @@ namespace Advent.Final.Core.V1
                 User newUser = _mapper.Map<User>(userCreate);
                 newUser.Created = DateTime.Now;
                 newUser.Status = "Creado";
+                newUser.Token = _stripe.CreateCustomer($"{userCreate.FirstName} {userCreate.LastName}", userCreate.Email);
                 var response = await _context.AddAsync(newUser);
                 return new ResponseService<User>(false, response == null ? "No records found" : "User created", HttpStatusCode.OK, response.Item1);
             }
@@ -59,12 +61,12 @@ namespace Advent.Final.Core.V1
             }
         }
 
-        public async Task<ResponseService<User>> UpdatePassword(int userId, string password)
+        public async Task<ResponseService<User>> UpdatePassword(int userId,UserPasswordDto request)
         {
             try
             {
                 User user = await _context.GetByIdAsync(userId);
-                user.Password = password;
+                user.Password = request.Password;
                 var response = await _context.UpdateAsync(user);
                 return new ResponseService<User>(false,"Password updated",HttpStatusCode.OK, response.Item1);
             }
@@ -74,17 +76,24 @@ namespace Advent.Final.Core.V1
             }
         }
 
-        public async Task<bool> AuthUser(string username, string password)
+        internal async Task<string> GetCustomerTokenById(int userId)
+        {
+            var result= await _context.GetByIdAsync(userId);
+            return result.Token;
+        }
+
+        public async Task<Tuple<int,bool>> AuthUser(string username, string password)
         {
             var users = await _context.GetByFilterAsync(u => u.Username.Equals(username));
-            if(users.Count == 0) { return false; }
+            if(users.Count == 0) { return new(-1,false); }
             string passwordAttempt = EncryptCore.Encrypt_SHA256(username, password);
             if(passwordAttempt == users.FirstOrDefault().Password)
             {
                 users.FirstOrDefault().LastLogin=DateTime.Now;
-                return true;
+                await _context.UpdateAsync(users.FirstOrDefault());
+                return new(users.FirstOrDefault().Id, true);
             }
-            else { return false; }
+            else { return new(-1, false); }
         }
 
         public async Task<bool> SetPassword(string username, string password)

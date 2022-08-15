@@ -28,9 +28,9 @@ namespace Advent.Final.Core.V1
             _userCore = new(userContext, userLogger, mapper);
             _config = configuration;
         }
-        public async Task<ResponseService<bool>> AddPassword(string username, string password) 
+        public async Task<ResponseService<bool>> AddPassword(UserLoginRequestDto request) 
         {
-            if (await _userCore.SetPassword(username, password))
+            if (await _userCore.SetPassword(request.Username, request.Password))
             {
                 return new ResponseService<bool>(false, "Password added", HttpStatusCode.OK, true);
             }
@@ -39,9 +39,9 @@ namespace Advent.Final.Core.V1
                 return new ResponseService<bool>(true, "No password", HttpStatusCode.BadRequest, false);
             }
         }
-        public async Task<ResponseService<bool>> ResetPassword(string username, string password,string newPassword) 
+        public async Task<ResponseService<bool>> ResetPassword(UserChangePasswordDto request) 
         {
-            if (await _userCore.ChangePassword(username, password,newPassword))
+            if (await _userCore.ChangePassword(request.Username, request.Password,request.NewPassword))
             {
                 return new ResponseService<bool>(false, "Password changed", HttpStatusCode.OK, true);
             }
@@ -51,14 +51,16 @@ namespace Advent.Final.Core.V1
             }
         }
 
-        public async Task<ResponseService<UserLoginDto>> AuthUser(string username,string password)
+        public async Task<ResponseService<UserLoginDto>> AuthUser(UserLoginRequestDto request)
         {
-            if (await _userCore.AuthUser(username, password))
+            var authResponse = await _userCore.AuthUser(request.Username,request.Password);
+            if (authResponse.Item2)
             {
                 var response = new UserLoginDto()
                 {
-                    Token = GenerarTokenJWT(username),
-                    Username = username,
+                    UserId = authResponse.Item1,
+                    Token = GenerarTokenJWT(request.Username),
+                    Username = request.Username,
                     ExpireDate = DateTime.UtcNow.AddDays(1)
                 };
                 return new ResponseService<UserLoginDto>(false, "Login successful", HttpStatusCode.OK, response);
@@ -84,6 +86,7 @@ namespace Advent.Final.Core.V1
             var _Claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.NameId, username),
+                new Claim(JwtRegisteredClaimNames.Name, username),
             };
 
             // Create payload
