@@ -8,7 +8,7 @@ namespace Advent.Final.Entities.DTOs
 {
     public class BookingDetailDto
     {
-        public int ContainerId { get; set; }
+        public string ContainerId { get; set; }
         public int Fee { get; set; }
     }
 }

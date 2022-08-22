@@ -10,7 +10,7 @@ namespace Advent.Final.Entities.Entities
     {
         public int Id { get; set; }
         public int BookingId { get; set; }
-        public int ContainerId { get; set; }
+        public string ContainerId { get; set; }
         public int Fee { get; set; }
     }
 }

@@ -27,6 +27,13 @@ namespace Advent.Final.Services
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -42,7 +49,7 @@ namespace Advent.Final.Services
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
 
-            services.AddDbContext<SqlServerContext>(op =>
+            services.AddDbContext<MySqlContext>(op =>
             {
                 op.UseMySQL(Configuration.GetConnectionString("MySQL"));
                 //op.UseSqlServer(Configuration.GetConnectionString("Default"));
@@ -78,6 +85,8 @@ namespace Advent.Final.Services
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Advent.Final.Services v1"));
             }
+
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
 
